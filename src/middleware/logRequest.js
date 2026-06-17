@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const Log = require("../models/log.model");
 const si = require("systeminformation");
 
 const logRequest = (req, res, next) => {
@@ -29,35 +29,18 @@ const logRequest = (req, res, next) => {
                 cpuCores: cpu.cores
             };
 
-            await pool.query(
-                `
-                INSERT INTO user_logs
-                (
-                    timestamp,
-                    method,
-                    path,
-                    status,
-                    duration,
-                    user_agent,
-                    ip,
-                    owner,
-                    system_info
-                )
-                VALUES
-                ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-                `,
-                [
-                    new Date(),
-                    req.method,
-                    req.path,
-                    res.statusCode,
-                    `${duration}ms`,
-                    req.headers["user-agent"],
-                    req.ip,
-                    "anonymous",
-                    JSON.stringify(systemInfo)
-                ]
-            );
+            await Log.create({
+                timestamp: new Date(),
+                method: req.method,
+                path: req.path,
+                status: res.statusCode,
+                duration: `${duration}ms`,
+                user_agent: req.headers["user-agent"],
+                ip: req.ip,
+                owner: "anonymous",
+                system_info: systemInfo
+            });
+
         } catch (error) {
             console.error(error);
         }

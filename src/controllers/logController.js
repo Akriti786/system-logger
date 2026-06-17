@@ -1,8 +1,11 @@
-const logModel = require("../models/logModel");
+const Log = require("../models/log.model");
 
 const getLogs = async (req, res) => {
     try {
-        const logs = await logModel.getAllLogs();
+        const logs = await Log.findAll({
+            order: [["id", "DESC"]]
+        });
+
         res.json(logs);
     } catch (error) {
         res.status(500).json({
@@ -11,6 +14,4 @@ const getLogs = async (req, res) => {
     }
 };
 
-module.exports = {
-    getLogs
-};
+module.exports = { getLogs };

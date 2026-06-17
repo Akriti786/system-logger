@@ -1,10 +1,15 @@
-const { Pool } = require("pg");
+const { Sequelize } = require("sequelize");
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: "postgres",
+    protocol: "postgres",
+    logging: false,
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
     }
 });
 
-module.exports = pool;
+module.exports = sequelize;
